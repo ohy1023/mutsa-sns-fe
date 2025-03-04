@@ -8,6 +8,7 @@ module.exports = {
         sans: ['NotoSans_400Regular'],
         noto: ['NotoSans_400Regular'],
         notoBold: ['NotoSans_700Bold'],
+        notoBlack: ['NotoSans_900Black'],
       },
     },
   },

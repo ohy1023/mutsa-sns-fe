@@ -2,6 +2,7 @@
   "expo": {
     "name": "mutsa-sns",
     "slug": "mutsa-sns",
+    "scheme": "mutsa-sns",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -25,7 +26,13 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "앱에서 이미지를 업로드하기 위해 사진 라이브러리에 접근해야 합니다."
+        }
+      ]
     ]
   }
 }
