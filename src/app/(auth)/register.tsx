@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { registerUser } from '@/api/register';
-import { UserJoinRequest } from '@/types/register';
+import { registerUser } from '@/api/user';
+import { UserJoinRequest } from '@/types/user';
 
 export default function Register() {
   const [userName, setUserName] = useState<string>('');

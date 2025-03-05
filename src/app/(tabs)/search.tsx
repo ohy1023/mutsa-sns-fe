@@ -11,9 +11,10 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import debounce from 'lodash/debounce';
-import { fetchUsers } from '@/api/searchApi';
+import { fetchUsers } from '@/api/search';
 import { Page } from '@/types/common';
-import { UserInfoResponse } from '@/types/search';
+import { UserInfoResponse } from '@/types/user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Search() {
   const [query, setQuery] = useState('');
@@ -21,7 +22,16 @@ export default function Search() {
   const [page, setPage] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+  const [myUserName, setMyUserName] = useState<string | null>('');
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchMyUserName = async () => {
+      const storedUserName = await AsyncStorage.getItem('userName');
+      setMyUserName(storedUserName);
+    };
+    fetchMyUserName();
+  });
 
   useEffect(() => {
     if (query.trim()) {
@@ -81,7 +91,14 @@ export default function Search() {
   };
 
   const handleUserPress = (userName: string) => {
-    router.push(`/info/${userName}`);
+    if (myUserName && userName === myUserName) {
+      router.push('/mypage');
+    } else {
+      router.push({
+        pathname: `/profile/[userName]`,
+        params: { userName },
+      });
+    }
   };
 
   return (

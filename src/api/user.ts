@@ -1,8 +1,31 @@
-import { LoginRequest, LoginResult } from '@/types/login';
 import publicApi from '@/utils/publicApi';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Response, ErrorResponse } from '@/types/common';
 import { AxiosError } from 'axios';
+import { UserJoinRequest, UserJoinResponse } from '@/types/user';
+import { LoginRequest, LoginResult } from '@/types/user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export const registerUser = async (
+  userData: UserJoinRequest,
+): Promise<UserJoinResponse> => {
+  try {
+    const response = await publicApi.post<Response<UserJoinResponse>>(
+      '/users/join',
+      userData,
+    );
+    return response.data.result;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      const serverError: ErrorResponse | undefined = error.response?.data;
+      if (serverError && serverError.resultCode === 'ERROR') {
+        throw new Error(
+          `${serverError.result.errorCode}: ${serverError.result.message}`,
+        );
+      }
+    }
+    throw new Error('회원가입 중 오류가 발생했습니다.');
+  }
+};
 
 export const loginUser = async (credentials: LoginRequest): Promise<string> => {
   try {

@@ -1,6 +1,6 @@
 import publicApi from '@/utils/publicApi';
 import { Page, Response, ErrorResponse } from '@/types/common';
-import { UserInfoResponse } from '@/types/search';
+import { UserInfoResponse } from '@/types/user';
 import { AxiosError } from 'axios';
 
 export const fetchUsers = async (

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import { loginUser } from '@/api/login';
+import { loginUser } from '@/api/user';
 
 export default function Login() {
   const [userName, setUserName] = useState<string>('');

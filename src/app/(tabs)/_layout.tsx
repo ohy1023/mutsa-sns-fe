@@ -53,7 +53,7 @@ export default function TabLayout() {
             options={{ title: '새 게시물', tabBarIcon: () => <Text>✏️</Text> }}
           />
           <Tabs.Screen
-            name="profile"
+            name="mypage"
             options={{ title: '마이페이지', tabBarIcon: () => <Text>👤</Text> }}
           />
         </Tabs>

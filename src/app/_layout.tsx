@@ -60,10 +60,11 @@ export default function Layout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       {isAuthenticated ? (
-        <Stack.Screen name="(tabs)" /> // 로그인 후 접근 가능
+        <Stack.Screen name="(tabs)" />
       ) : (
-        <Stack.Screen name="(auth)/login" /> // 로그인 필요
+        <Stack.Screen name="(auth)/login" />
       )}
+      <Stack.Screen name="profile/[userName]" />
     </Stack>
   );
 }
