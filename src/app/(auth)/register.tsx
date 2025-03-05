@@ -1,29 +1,48 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import publicApi from '../../utils/publicApi';
+import { registerUser } from '@/api/register';
+import { UserJoinRequest } from '@/types/register';
 
 export default function Register() {
   const [userName, setUserName] = useState<string>('');
   const [nickName, setNickName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      return Alert.alert('오류', '비밀번호가 일치하지 않습니다.');
+    if (
+      !userName.trim() ||
+      !nickName.trim() ||
+      !password.trim() ||
+      !confirmPassword.trim()
+    ) {
+      Alert.alert('회원가입 실패', '모든 필드를 입력해주세요.');
+      return;
     }
 
+    if (password !== confirmPassword) {
+      Alert.alert('회원가입 실패', '비밀번호가 일치하지 않습니다.');
+      return;
+    }
+
+    setLoading(true);
     try {
-      await publicApi.post('/users/join', {
-        userName,
-        password,
-      });
-      Alert.alert('회원가입 성공', '로그인 해주세요.');
+      const userData: UserJoinRequest = { userName, nickName, password };
+      const newUser = await registerUser(userData);
+
+      Alert.alert('회원가입 성공', `${newUser.nickName}님, 가입을 환영합니다!`);
       router.replace('/login');
     } catch (error) {
-      Alert.alert('회원가입 실패', '다시 시도해주세요.');
+      if (error instanceof Error) {
+        Alert.alert('회원가입 실패', error.message);
+      } else {
+        Alert.alert('회원가입 실패', '알 수 없는 오류가 발생했습니다.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -33,6 +52,7 @@ export default function Register() {
       <TextInput
         className="border p-3 rounded-md w-full mb-4"
         placeholder="아이디"
+        autoCapitalize="none"
         value={userName}
         onChangeText={setUserName}
       />
@@ -57,10 +77,15 @@ export default function Register() {
         onChangeText={setConfirmPassword}
       />
       <TouchableOpacity
-        className="bg-green-500 p-3 rounded-md w-full"
+        className={`p-3 rounded-md w-full ${
+          loading ? 'bg-gray-400' : 'bg-green-500'
+        }`}
         onPress={handleRegister}
+        disabled={loading}
       >
-        <Text className="text-white text-center">회원가입</Text>
+        <Text className="text-white text-center">
+          {loading ? '회원가입 중...' : '회원가입'}
+        </Text>
       </TouchableOpacity>
     </View>
   );

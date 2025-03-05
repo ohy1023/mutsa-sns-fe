@@ -28,7 +28,7 @@ export default function NewPost() {
   const [selectedMedia, setSelectedMedia] = useState<MediaItem[]>([]);
   const [modalVisible, setModalVisible] = useState(false);
 
-  /** ✅ 미디어 선택 */
+  /** 미디어 선택 */
   const pickMedia = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -57,7 +57,7 @@ export default function NewPost() {
     const formData = new FormData();
     formData.append('postCreateRequest', JSON.stringify({ body: postText }));
 
-    // ✅ 이미지 파일을 FormData에 추가
+    // 이미지 파일을 FormData에 추가
     await Promise.all(
       selectedMedia.map(async (item, index) => {
         const response = await fetch(item.uri);
@@ -75,7 +75,7 @@ export default function NewPost() {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer YOUR_ACCESS_TOKEN`, // 🔑 JWT 토큰 추가
+          Authorization: `Bearer YOUR_ACCESS_TOKEN`, // JWT 토큰 추가
         },
         body: formData,
       });
@@ -105,11 +105,11 @@ export default function NewPost() {
         className="bg-gray-200 p-3 rounded-md mb-4"
       >
         <Text className="text-center text-gray-700">
-          📸🎥 사진/영상 선택 (최대 10개)
+          📸 사진 선택 (최대 10개)
         </Text>
       </TouchableOpacity>
 
-      {/* ✅ 순서 변경 가능하도록 DraggableFlatList 사용 */}
+      {/* 순서 변경 가능하도록 DraggableFlatList 사용 */}
       {selectedMedia.length > 0 && (
         <DraggableFlatList
           data={selectedMedia}
@@ -128,7 +128,7 @@ export default function NewPost() {
                   className="w-full h-full object-cover"
                 />
 
-                {/* ✅ 삭제 버튼 */}
+                {/* 삭제 버튼 */}
                 <TouchableOpacity
                   onPress={() =>
                     setSelectedMedia((prev) =>
@@ -140,7 +140,7 @@ export default function NewPost() {
                   <Text className="text-white text-xs font-bold">X</Text>
                 </TouchableOpacity>
 
-                {/* ✅ 드래그 핸들러 */}
+                {/* 드래그 핸들러 */}
                 <TouchableOpacity
                   onLongPress={drag}
                   disabled={isActive}
@@ -152,7 +152,7 @@ export default function NewPost() {
         />
       )}
 
-      {/* ✅ 입력 필드 (클릭 시 모달 열기) */}
+      {/* 입력 필드 (클릭 시 모달 열기) */}
       <TextInput
         className="border p-3 rounded-md mb-4 bg-gray-100 text-gray-500"
         placeholder="내용을 입력하세요..."
@@ -160,7 +160,7 @@ export default function NewPost() {
         onFocus={() => setModalVisible(true)}
       />
 
-      {/* ✅ 모달 화면 */}
+      {/* 모달 화면 */}
       <Modal visible={modalVisible} animationType="slide">
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -179,7 +179,7 @@ export default function NewPost() {
         </KeyboardAvoidingView>
       </Modal>
 
-      {/* ✅ 게시하기 버튼 */}
+      {/* 게시하기 버튼 */}
       <TouchableOpacity
         onPress={handlePost}
         className={`p-3 rounded-md ${

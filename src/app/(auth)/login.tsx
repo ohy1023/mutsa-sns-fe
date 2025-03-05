@@ -1,31 +1,34 @@
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import publicApi from '../../utils/publicApi';
+import { loginUser } from '@/api/login';
 
 export default function Login() {
-  const [userName, setUserName] = useState('');
-  const [password, setPassword] = useState('');
+  const [userName, setUserName] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const handleLogin = async () => {
+    if (!userName.trim() || !password.trim()) {
+      Alert.alert('로그인 실패', '아이디와 비밀번호를 입력해주세요.');
+      return;
+    }
+
+    setLoading(true);
     try {
-      const response = await publicApi.post('/users/login', {
-        userName,
-        password,
-      });
-
-      console.log(response.data);
-      const token = response.data.result.jwt;
-
-      // 로그인 성공 시 토큰과 userName 저장
-      await AsyncStorage.setItem('authToken', token);
-      await AsyncStorage.setItem('userName', userName);
+      const token = await loginUser({ userName, password });
+      console.log('로그인 성공:', token);
 
       router.replace('/'); // 로그인 후 홈으로 이동
     } catch (error) {
-      Alert.alert('로그인 실패', '아이디 또는 비밀번호를 확인하세요.');
+      if (error instanceof Error) {
+        Alert.alert('로그인 실패', error.message);
+      } else {
+        Alert.alert('로그인 실패', '알 수 없는 오류가 발생했습니다.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,6 +38,7 @@ export default function Login() {
       <TextInput
         className="border p-3 rounded-md w-full mb-4"
         placeholder="아이디"
+        autoCapitalize="none"
         value={userName}
         onChangeText={setUserName}
       />
@@ -46,10 +50,15 @@ export default function Login() {
         onChangeText={setPassword}
       />
       <TouchableOpacity
-        className="bg-blue-500 p-3 rounded-md w-full mb-2"
+        className={`p-3 rounded-md w-full mb-2 ${
+          loading ? 'bg-gray-400' : 'bg-blue-500'
+        }`}
         onPress={handleLogin}
+        disabled={loading}
       >
-        <Text className="text-white text-center">로그인</Text>
+        <Text className="text-white text-center">
+          {loading ? '로그인 중...' : '로그인'}
+        </Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.push('/register')}>
         <Text className="text-gray-600">계정이 없나요? 회원가입</Text>
