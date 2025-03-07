@@ -1,34 +1,20 @@
 import publicApi from '@/utils/publicApi';
 import privateApiMultipart from '@/utils/privateApiMultipart';
 import privateApi from '@/utils/privateApi';
-import { PostCreateRequest, PostMediaRequest } from '@/types/post';
+import { PostMediaRequest } from '@/types/post';
 import { Response, Page } from '@/types/common';
 import { PostDetailResponse, PostSummaryInfoResponse } from '@/types/post';
 import mime from 'mime';
-import * as FileSystem from 'expo-file-system';
 
 export const registerPost = async (
-  postData: PostCreateRequest,
+  body: string,
   mediaFiles: PostMediaRequest[],
 ): Promise<void> => {
   try {
     const formData = new FormData();
+    formData.append('body', encodeURIComponent(body));
 
-    // 네이티브(iOS/Android)에서는 JSON 데이터를 파일로 변환 후 전송
-    const jsonString = JSON.stringify(postData);
-    const jsonFilePath = `${FileSystem.cacheDirectory}postData.json`;
-
-    await FileSystem.writeAsStringAsync(jsonFilePath, jsonString, {
-      encoding: FileSystem.EncodingType.UTF8,
-    });
-
-    formData.append('postData', {
-      uri: jsonFilePath,
-      type: 'application/json',
-      name: 'postData.json',
-    } as any);
-
-    // 이미지 파일 추가 (Web과 네이티브 동일)
+    // 이미지 파일 추가
     mediaFiles.forEach((item, index) => {
       const fileType = mime.getType(item.uri) || 'image/jpeg';
       formData.append('multipartFileList', {
@@ -38,7 +24,7 @@ export const registerPost = async (
       } as any);
     });
 
-    // 이미지 순서 추가 (Web과 네이티브 동일)
+    // 이미지 순서 추가
     formData.append(
       'multipartFileOrderList',
       JSON.stringify(mediaFiles.map((item) => item.order)),

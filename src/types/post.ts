@@ -1,7 +1,3 @@
-export interface PostCreateRequest {
-  body: string;
-}
-
 export interface PostMediaRequest {
   uri: string; // 이미지 미리보기를 위한 `uri`
   order: number; // 이미지 순서

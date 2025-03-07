@@ -25,15 +25,20 @@ export default function Home() {
   const screenWidth = Dimensions.get('window').width;
   const imageWidth = screenWidth * 0.98;
   const imageHeight = imageWidth * 1;
+  const [refreshing, setRefreshing] = useState(false);
 
-  const fetchPosts = async () => {
-    if (loading) return; // 중복 호출 방지
+  const fetchPosts = async (resetPage = false) => {
+    if (loading) return;
     setLoading(true);
 
     try {
-      const newPosts = await getFollowingFeed(page);
-      setPosts((prev) => [...prev, ...newPosts.content]);
-      setPage((prev) => prev + 1);
+      const newPage = resetPage ? 0 : page;
+      const newPosts = await getFollowingFeed(newPage);
+
+      setPosts((prev) =>
+        resetPage ? newPosts.content : [...prev, ...newPosts.content],
+      );
+      setPage(newPage + 1);
     } catch (error) {
       console.log(error);
     } finally {
@@ -47,6 +52,12 @@ export default function Home() {
 
   const handleShare = () => {
     Alert.alert('채팅 기능 준비 중');
+  };
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchPosts(true); // 페이지 초기화 후 새로고침
+    setRefreshing(false);
   };
 
   const toggleLike = async (
@@ -147,11 +158,13 @@ export default function Home() {
             </View>
           </>
         )}
-        onEndReached={fetchPosts} // 스크롤 끝에 도달하면 새로운 데이터 로드
+        onEndReached={() => fetchPosts()} // 스크롤 끝에서 추가 로드 // 스크롤 끝에 도달하면 새로운 데이터 로드
         onEndReachedThreshold={0.5} // 50% 지점에서 추가 로드
         ListFooterComponent={
           loading ? <ActivityIndicator size="large" color="#ff9900" /> : null
         }
+        refreshing={refreshing} // 아래로 당겨 새로고침 상태 적용
+        onRefresh={onRefresh} // 새로고침 핸들러 적용
       />
 
       {/* 댓글 모달 */}

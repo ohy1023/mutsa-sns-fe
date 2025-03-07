@@ -12,20 +12,20 @@ import {
 } from 'react-native';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 import { registerPost } from '@/api/post';
-import { PostMediaRequest, PostCreateRequest } from '@/types/post';
+import { PostMediaRequest } from '@/types/post';
 import { useRouter } from 'expo-router';
 
 export default function NewPost() {
   const [postText, setPostText] = useState('');
   const [mediaState, setMediaState] = useState<PostMediaRequest[]>([]);
-  const mediaRef = useRef(mediaState); // ✅ `useRef`를 사용하여 직접 참조 저장
+  const mediaRef = useRef(mediaState);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  /** 📸 미디어 선택 */
+  // 미디어 선택
   const pickMedia = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'], // ✅ 올바른 옵션 사용
+      mediaTypes: ['images'],
       allowsMultipleSelection: true,
       selectionLimit: 10,
       allowsEditing: false,
@@ -35,17 +35,17 @@ export default function NewPost() {
     if (!result.canceled) {
       const mediaArray: PostMediaRequest[] = result.assets.map(
         (asset, index) => ({
-          uri: asset.uri, // ✅ `fetch().blob()` 제거, `uri`만 저장
+          uri: asset.uri,
           order: index,
         }),
       );
 
       setMediaState(mediaArray);
-      mediaRef.current = mediaArray; // ✅ useRef에 상태 반영
+      mediaRef.current = mediaArray;
     }
   };
 
-  /** 🚀 게시글 업로드 */
+  // 게시글 업로드
   const handlePost = async () => {
     if (!postText.trim() || mediaState.length === 0) {
       Alert.alert('경고', '내용이나 이미지를 추가해주세요.');
@@ -54,11 +54,7 @@ export default function NewPost() {
 
     setLoading(true);
     try {
-      const postData: PostCreateRequest = {
-        body: postText,
-      };
-
-      await registerPost(postData, mediaState); // ✅ API 호출
+      await registerPost(postText, mediaState);
       Alert.alert('성공', '게시물이 업로드되었습니다.');
 
       setPostText('');
@@ -67,20 +63,22 @@ export default function NewPost() {
       router.push('/');
     } catch (error) {
       Alert.alert(
-        'Post Upload Failed!',
-        error instanceof Error ? error.message : 'Unknown error.',
+        '업로드 실패',
+        error instanceof Error
+          ? error.message
+          : '알 수 없는 오류가 발생했습니다.',
       );
     } finally {
       setLoading(false);
     }
   };
 
-  /** ✨ 드래그 종료 시 상태 업데이트 */
+  // 드래그 종료 시 상태 업데이트
   const onDragEnd = useCallback(({ data }: { data: PostMediaRequest[] }) => {
     const newData = data.map((item, idx) => ({
       ...item,
       order: idx,
-    })); // ✅ 새로운 객체 생성
+    }));
 
     setMediaState(newData);
     mediaRef.current = newData;
@@ -91,18 +89,16 @@ export default function NewPost() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       className="flex-1 bg-white p-4"
     >
-      <Text className="text-xl font-bold mb-4">New Post</Text>
+      <Text className="text-xl font-bold mb-4">새 게시물</Text>
 
       <TouchableOpacity
         onPress={pickMedia}
         className="bg-gray-200 p-3 rounded-md mb-4"
       >
-        <Text className="text-center text-gray-700">
-          📸 Select Photos (Max 10)
-        </Text>
+        <Text className="text-center text-gray-700">사진 선택 (최대 10장)</Text>
       </TouchableOpacity>
 
-      {/* 🖼 이미지 리스트 (드래그 가능) */}
+      {/* 이미지 리스트 (드래그 가능) */}
       {mediaState.length > 0 && (
         <DraggableFlatList
           data={mediaState}
@@ -142,7 +138,7 @@ export default function NewPost() {
 
       <TextInput
         className="border p-3 rounded-md mb-4 bg-gray-100 text-gray-500"
-        placeholder="Enter your content..."
+        placeholder="내용을 입력하세요..."
         value={postText}
         onChangeText={setPostText}
       />
@@ -153,7 +149,7 @@ export default function NewPost() {
         disabled={loading}
       >
         <Text className="text-center text-white font-bold">
-          {loading ? 'Posting...' : 'Post'}
+          {loading ? '업로드 중...' : '게시하기'}
         </Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
