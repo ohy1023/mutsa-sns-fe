@@ -65,6 +65,7 @@ export default function Layout() {
         <Stack.Screen name="(auth)/login" />
       )}
       <Stack.Screen name="profile/[userName]" />
+      <Stack.Screen name="post/[postId]" />
     </Stack>
   );
 }

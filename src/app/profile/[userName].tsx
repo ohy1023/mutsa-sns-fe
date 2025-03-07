@@ -9,8 +9,9 @@ import {
   Alert,
   Modal,
 } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
-import { getUserInfo, getUserPosts } from '@/api/post';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { getUserPosts } from '@/api/post';
+import { getUserInfo } from '@/api/user';
 import {
   followCheck,
   followUser,
@@ -20,6 +21,8 @@ import {
 } from '@/api/follow';
 import { UserDetailResponse, UserInfoResponse } from '@/types/user';
 import { PostSummaryInfoResponse } from '@/types/post';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function Profile() {
   const { userName } = useLocalSearchParams<{ userName: string }>();
@@ -33,24 +36,25 @@ export default function Profile() {
     'followers' | 'following' | null
   >(null);
   const [modalData, setModalData] = useState<UserInfoResponse[]>([]);
-
+  const router = useRouter();
   const safeUserName = Array.isArray(userName) ? userName[0] : userName;
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const userData = await getUserInfo(safeUserName);
-        const userPosts = await getUserPosts(safeUserName, 0);
-        setUserInfo(userData);
-        setPosts(userPosts.content);
-        setIsFollowing(await followCheck(safeUserName));
-        setHasMorePosts(!userPosts.last);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
+  const fetchData = async () => {
+    try {
+      const userData = await getUserInfo(safeUserName);
+      const userPosts = await getUserPosts(safeUserName, 0);
+      setUserInfo(userData);
+      setPosts(userPosts.content);
+      setIsFollowing(await followCheck(safeUserName));
+      setHasMorePosts(!userPosts.last);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     fetchData();
   }, [userName]);
 
@@ -65,6 +69,7 @@ export default function Profile() {
         await followUser(userInfo.userName);
         setIsFollowing(true);
       }
+      await fetchData();
     } catch (error) {
       Alert.alert('오류', '팔로우 상태 변경 실패');
     }
@@ -98,6 +103,10 @@ export default function Profile() {
     }
   };
 
+  const handlePostPress = (postId: number) => {
+    router.push(`/post/${postId}`);
+  };
+
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center">
@@ -127,14 +136,13 @@ export default function Profile() {
           </View>
         </View>
       </View>
-
       {/* 팔로워 / 팔로잉 정보 */}
       <View className="flex-row justify-center mb-4">
         <TouchableOpacity
           onPress={() => openModal('followers')}
           className="mx-6"
         >
-          <Text className="text-center text-xl font-bold text-black">
+          <Text className="text-left text-xl font-bold text-black">
             {userInfo?.followerCount}
           </Text>
           <Text className="text-gray-600">팔로워</Text>
@@ -143,18 +151,17 @@ export default function Profile() {
           onPress={() => openModal('following')}
           className="mx-6"
         >
-          <Text className="text-center text-xl font-bold text-black">
+          <Text className="text-left text-xl font-bold text-black">
             {userInfo?.followingCount}
           </Text>
           <Text className="text-gray-600">팔로잉</Text>
         </TouchableOpacity>
       </View>
-
       {/* 버튼 영역 */}
       <View className="flex-row justify-center">
         <TouchableOpacity
           onPress={handleFollowToggle}
-          className={`px-6 py-2 rounded-lg w-40 text-center ${
+          className={`px-6 py-2 rounded-lg w-48 text-center ${
             isFollowing ? 'bg-gray-300' : 'bg-blue-600'
           }`}
         >
@@ -163,52 +170,70 @@ export default function Profile() {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="px-6 py-2 ml-2 bg-gray-800 rounded-lg w-40 text-center">
+        <TouchableOpacity className="px-6 py-2 ml-2 bg-gray-800 rounded-lg w-48 text-center">
           <Text className="text-white text-center text-lg">메시지</Text>
         </TouchableOpacity>
       </View>
-
       {/* 게시물 리스트 */}
       <FlatList
+        className="pt-10"
         data={posts}
         numColumns={3}
         keyExtractor={(item) => item.postId.toString()}
         renderItem={({ item }) => (
-          <Image
-            source={{ uri: item.postThumbnailUrl }}
+          <TouchableOpacity
+            onPress={() => handlePostPress(item.postId)}
             className="w-[31%] h-32 m-1 rounded-md"
-          />
+          >
+            <Image
+              source={{ uri: item.postThumbnailUrl }}
+              className="w-full h-32"
+            />
+          </TouchableOpacity>
         )}
         onEndReached={loadMorePosts}
         onEndReachedThreshold={0.5}
       />
-
       {/* 팔로워 / 팔로잉 모달 */}
       <Modal visible={modalVisible !== null} animationType="slide">
-        <View className="flex-1 p-4">
-          <Text className="text-xl font-bold mb-4">
-            {modalVisible === 'followers' ? '팔로워' : '팔로잉'}
-          </Text>
-          <FlatList
-            data={modalData}
-            keyExtractor={(item) => item.userId.toString()}
-            renderItem={({ item }) => (
-              <View className="flex-row items-center p-2 border-b">
-                <Image
-                  source={{ uri: item.userImg }}
-                  className="w-10 h-10 rounded-full mr-3"
-                />
-                <Text className="text-lg">{item.userName}</Text>
-              </View>
-            )}
-          />
-          <TouchableOpacity
-            className="mt-4 p-2 bg-gray-200 rounded-md"
-            onPress={() => setModalVisible(null)}
-          >
-            <Text className="text-center">닫기</Text>
-          </TouchableOpacity>
-        </View>
+        <SafeAreaView className="flex-1 bg-white">
+          {/* 🔥 SafeArea 적용 후 패딩 추가하여 상태바와 겹치지 않도록 수정 */}
+          <View className="pt-6 px-4">
+            {/* 상단 헤더 */}
+            <View className="flex-row items-center mb-4">
+              <TouchableOpacity
+                onPress={() => setModalVisible(null)}
+                className="pr-4"
+              >
+                <Ionicons name="chevron-back" size={24} color="black" />
+              </TouchableOpacity>
+              <Text className="text-xl font-bold">
+                {modalVisible === 'followers' ? '팔로워' : '팔로잉'}
+              </Text>
+            </View>
+
+            {/* 유저 리스트 */}
+            <FlatList
+              data={modalData}
+              keyExtractor={(item) => item.userId.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => {
+                    setModalVisible(null);
+                    router.push(`/profile/${item.userName}`);
+                  }}
+                  className="flex-row items-center p-2 border-b"
+                >
+                  <Image
+                    source={{ uri: item.userImg }}
+                    className="w-10 h-10 rounded-full mr-3"
+                  />
+                  <Text className="text-lg">{item.userName}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </SafeAreaView>
       </Modal>
     </View>
   );

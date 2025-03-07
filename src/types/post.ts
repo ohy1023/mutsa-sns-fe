@@ -19,7 +19,10 @@ export interface PostDetailResponse {
   nickName: string;
   registeredAt: string;
   likeCnt: number;
+  userImg: string;
   commentCnt: number;
+  isOwner: boolean;
+  isLiked: boolean;
   postMediaDtoList: PostMediaDto[];
 }
 
