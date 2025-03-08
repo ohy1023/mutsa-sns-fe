@@ -19,6 +19,7 @@ import {
   getFollowers,
   getFollowingUsers,
 } from '@/api/follow';
+import { createChatRoom } from '@/api/chat';
 import { UserDetailResponse, UserInfoResponse } from '@/types/user';
 import { PostSummaryInfoResponse } from '@/types/post';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -72,6 +73,20 @@ export default function Profile() {
       await fetchData();
     } catch (error) {
       Alert.alert('오류', '팔로우 상태 변경 실패');
+    }
+  };
+
+  const handleMessagePress = async () => {
+    if (!userInfo) return;
+
+    try {
+      const response = await createChatRoom({
+        joinUserName: userInfo.userName,
+      });
+      const chatRoomId = response.chatNo; // 생성된 채팅방 ID 가져오기
+      router.push(`/myChat/${chatRoomId}`); // 해당 채팅방으로 이동
+    } catch (error) {
+      Alert.alert('오류', '채팅방을 생성하는 데 실패했습니다.');
     }
   };
 
@@ -170,7 +185,10 @@ export default function Profile() {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity className="px-6 py-2 ml-2 bg-gray-800 rounded-lg w-48 text-center">
+        <TouchableOpacity
+          className="px-6 py-2 ml-2 bg-gray-800 rounded-lg w-48 text-center"
+          onPress={handleMessagePress}
+        >
           <Text className="text-white text-center text-lg">메시지</Text>
         </TouchableOpacity>
       </View>

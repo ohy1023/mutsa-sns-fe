@@ -66,6 +66,7 @@ export default function Layout() {
       )}
       <Stack.Screen name="profile/[userName]" />
       <Stack.Screen name="post/[postId]" />
+      <Stack.Screen name="myChat" />
     </Stack>
   );
 }

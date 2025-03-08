@@ -158,9 +158,6 @@ export default function PostDetail() {
           </TouchableOpacity>
           <Text className="ml-3 font-bold text-lg mr-3">{post.commentCnt}</Text>
           {/* 댓글 수 표시 */}
-          <TouchableOpacity>
-            <Ionicons name="paper-plane-outline" size={28} color="black" />
-          </TouchableOpacity>
         </View>
 
         {/* 게시글 내용 */}

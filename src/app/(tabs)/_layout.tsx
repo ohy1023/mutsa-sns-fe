@@ -24,14 +24,14 @@ export default function TabLayout() {
   const router = useRouter();
 
   const fetchAlarms = async () => {
-    if (loading || !hasNextPage) return; // 중복 호출 방지 + 마지막 페이지 체크
+    if (loading || !hasNextPage) return;
 
     setLoading(true);
     try {
       const alarmData = await getAlarms(page);
-      setAlarms((prev) => [...prev, ...alarmData.content]); // 기존 데이터에 추가
+      setAlarms((prev) => [...prev, ...alarmData.content]);
       setPage((prev) => prev + 1);
-      setHasNextPage(!alarmData.last); // 마지막 페이지 여부 체크
+      setHasNextPage(!alarmData.last);
     } catch (error) {
       console.error('알림 불러오기 실패:', error);
     } finally {
@@ -82,7 +82,7 @@ export default function TabLayout() {
                 <TouchableOpacity onPress={() => setIsAlarmModalVisible(true)}>
                   <Bell size={24} color="black" />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push('/myChat')}>
                   <MessageCircle size={24} color="black" />
                 </TouchableOpacity>
               </View>
@@ -117,7 +117,6 @@ export default function TabLayout() {
           />
         </Tabs>
 
-        {/* 알림 모달 (무한 스크롤 적용) */}
         <Modal visible={isAlarmModalVisible} animationType="slide" transparent>
           <View className="flex-1 justify-end bg-black bg-opacity-50">
             <View className="bg-white p-4 rounded-t-lg h-[70%]">
@@ -142,8 +141,8 @@ export default function TabLayout() {
                       </Text>
                     </TouchableOpacity>
                   )}
-                  onEndReached={fetchAlarms} // 스크롤 끝에서 추가 로드
-                  onEndReachedThreshold={0.5} // 50% 스크롤 시점에서 로드
+                  onEndReached={fetchAlarms}
+                  onEndReachedThreshold={0.5}
                   ListFooterComponent={
                     loading ? (
                       <ActivityIndicator size="large" color="#ff9900" />

@@ -39,3 +39,11 @@ export interface Page<T> {
   first?: boolean; // 첫 번째 페이지 여부 (선택적)
   empty?: boolean; // 데이터가 비어있는지 여부 (선택적)
 }
+
+export interface Slice<T> {
+  content: T[]; // 현재 페이지 데이터 목록
+  size: number; // 요청한 페이지 크기
+  number: number; // 현재 페이지 번호 (0부터 시작)
+  hasNext: boolean; // 다음 페이지 존재 여부
+  hasPrevious: boolean; // 이전 페이지 존재 여부
+}
