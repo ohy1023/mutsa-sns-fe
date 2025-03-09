@@ -74,7 +74,10 @@ export default function MyChat() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      <View className="p-4 border-b border-gray-300">
+      <View className="p-4 border-b border-gray-300 flex-row items-center">
+        <TouchableOpacity onPress={() => router.push('/')} className="mr-4">
+          <Text className="text-lg font-bold">{'←'}</Text>
+        </TouchableOpacity>
         <Text className="text-2xl font-bold">내 채팅방</Text>
       </View>
 

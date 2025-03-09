@@ -7,11 +7,22 @@ import {
   NotoSans_700Bold,
   NotoSans_900Black,
 } from '@expo-google-fonts/noto-sans';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, Platform } from 'react-native';
 import { useFonts } from 'expo-font';
 import '../../global.css';
+import { TextEncoder, TextDecoder } from 'util';
 
 SplashScreen.preventAutoHideAsync(); // 스플래시 화면 유지
+
+if (Platform.OS !== 'web') {
+  if (typeof global.TextEncoder === 'undefined') {
+    global.TextEncoder = TextEncoder;
+  }
+
+  if (typeof (global as any).TextDecoder === 'undefined') {
+    (global as any).TextDecoder = new TextDecoder();
+  }
+}
 
 export default function Layout() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);

@@ -30,7 +30,7 @@ export interface Message {
   chatNo: number;
   content: string;
   senderName: string;
-  sendTime: number;
+  sendDate: number;
   readCount: number;
 }
 

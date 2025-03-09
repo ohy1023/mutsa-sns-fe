@@ -9,7 +9,7 @@ const privateApi = axios.create({
   },
 });
 
-// ✅ 요청마다 토큰을 자동으로 추가하는 인터셉터 설정
+// 요청마다 토큰을 자동으로 추가하는 인터셉터 설정
 privateApi.interceptors.request.use(async (config) => {
   const token = await getToken(); // 저장된 JWT 토큰 가져오기
   if (token) {
