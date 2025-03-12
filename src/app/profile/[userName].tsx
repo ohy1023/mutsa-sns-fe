@@ -24,6 +24,7 @@ import { UserDetailResponse, UserInfoResponse } from '@/types/user';
 import { PostSummaryInfoResponse } from '@/types/post';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { Button } from '@/components/Button';
 
 export default function Profile() {
   const { userName } = useLocalSearchParams<{ userName: string }>();
@@ -59,7 +60,6 @@ export default function Profile() {
     fetchData();
   }, [userName]);
 
-  // 팔로우 / 언팔로우 버튼 핸들러
   const handleFollowToggle = async () => {
     if (!userInfo) return;
     try {
@@ -83,14 +83,13 @@ export default function Profile() {
       const response = await createChatRoom({
         joinUserName: userInfo.userName,
       });
-      const chatRoomId = response.chatNo; // 생성된 채팅방 ID 가져오기
-      router.push(`/myChat/${chatRoomId}`); // 해당 채팅방으로 이동
+      const chatRoomId = response.chatNo;
+      router.push(`/myChat/${chatRoomId}`);
     } catch (error) {
       Alert.alert('오류', '채팅방을 생성하는 데 실패했습니다.');
     }
   };
 
-  // 게시물 무한 스크롤 로드
   const loadMorePosts = async () => {
     if (!hasMorePosts) return;
     try {
@@ -104,7 +103,6 @@ export default function Profile() {
     }
   };
 
-  // 팔로워 / 팔로잉 목록 모달 열기
   const openModal = async (type: 'followers' | 'following') => {
     try {
       const data =
@@ -151,47 +149,33 @@ export default function Profile() {
           </View>
         </View>
       </View>
+
       {/* 팔로워 / 팔로잉 정보 */}
       <View className="flex-row justify-center mb-4">
-        <TouchableOpacity
+        <Button
+          title={`팔로워 ${userInfo?.followerCount}`}
           onPress={() => openModal('followers')}
-          className="mx-6"
-        >
-          <Text className="text-left text-xl font-bold text-black">
-            {userInfo?.followerCount}
-          </Text>
-          <Text className="text-gray-600">팔로워</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+        />
+        <Button
+          title={`팔로잉 ${userInfo?.followingCount}`}
           onPress={() => openModal('following')}
-          className="mx-6"
-        >
-          <Text className="text-left text-xl font-bold text-black">
-            {userInfo?.followingCount}
-          </Text>
-          <Text className="text-gray-600">팔로잉</Text>
-        </TouchableOpacity>
+        />
       </View>
+
       {/* 버튼 영역 */}
       <View className="flex-row justify-center">
-        <TouchableOpacity
+        <Button
+          title={isFollowing ? '언팔로우' : '팔로우'}
           onPress={handleFollowToggle}
-          className={`px-6 py-2 rounded-lg w-48 text-center ${
-            isFollowing ? 'bg-gray-300' : 'bg-blue-600'
-          }`}
-        >
-          <Text className="text-white text-center text-lg">
-            {isFollowing ? '언팔로우' : '팔로우'}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          className="px-6 py-2 ml-2 bg-gray-800 rounded-lg w-48 text-center"
+          color={isFollowing ? 'bg-gray-300' : 'bg-blue-600'}
+        />
+        <Button
+          title="메시지"
           onPress={handleMessagePress}
-        >
-          <Text className="text-white text-center text-lg">메시지</Text>
-        </TouchableOpacity>
+          color="bg-gray-800"
+        />
       </View>
+
       {/* 게시물 리스트 */}
       <FlatList
         className="pt-10"
@@ -212,12 +196,11 @@ export default function Profile() {
         onEndReached={loadMorePosts}
         onEndReachedThreshold={0.5}
       />
+
       {/* 팔로워 / 팔로잉 모달 */}
       <Modal visible={modalVisible !== null} animationType="slide">
         <SafeAreaView className="flex-1 bg-white">
-          {/* 🔥 SafeArea 적용 후 패딩 추가하여 상태바와 겹치지 않도록 수정 */}
           <View className="pt-6 px-4">
-            {/* 상단 헤더 */}
             <View className="flex-row items-center mb-4">
               <TouchableOpacity
                 onPress={() => setModalVisible(null)}

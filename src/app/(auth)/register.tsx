@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { registerUser } from '@/api/user';
 import { UserJoinRequest } from '@/types/user';
+import { InputField } from '@/components/InputField';
+import { Button } from '@/components/Button';
 
 export default function Register() {
   const [userName, setUserName] = useState<string>('');
@@ -49,44 +51,34 @@ export default function Register() {
   return (
     <View className="flex-1 items-center justify-center p-4 bg-white">
       <Text className="text-2xl font-bold mb-4">회원가입</Text>
-      <TextInput
-        className="border p-3 rounded-md w-full mb-4"
+      <InputField
         placeholder="아이디"
-        autoCapitalize="none"
         value={userName}
         onChangeText={setUserName}
       />
-      <TextInput
-        className="border p-3 rounded-md w-full mb-4"
+      <InputField
         placeholder="닉네임"
         value={nickName}
         onChangeText={setNickName}
       />
-      <TextInput
-        className="border p-3 rounded-md w-full mb-4"
+      <InputField
         placeholder="비밀번호"
-        secureTextEntry
         value={password}
         onChangeText={setPassword}
-      />
-      <TextInput
-        className="border p-3 rounded-md w-full mb-4"
-        placeholder="비밀번호 확인"
         secureTextEntry
+      />
+      <InputField
+        placeholder="비밀번호"
         value={confirmPassword}
         onChangeText={setConfirmPassword}
+        secureTextEntry
       />
-      <TouchableOpacity
-        className={`p-3 rounded-md w-full ${
-          loading ? 'bg-gray-400' : 'bg-green-500'
-        }`}
+      <Button
+        title="회원가입"
         onPress={handleRegister}
-        disabled={loading}
-      >
-        <Text className="text-white text-center">
-          {loading ? '회원가입 중...' : '회원가입'}
-        </Text>
-      </TouchableOpacity>
+        loading={loading}
+        color="bg-green-500"
+      />
     </View>
   );
 }

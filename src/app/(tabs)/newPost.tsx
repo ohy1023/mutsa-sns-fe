@@ -4,7 +4,6 @@ import {
   View,
   Text,
   TouchableOpacity,
-  TextInput,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -14,6 +13,8 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 import { registerPost } from '@/api/post';
 import { PostMediaRequest } from '@/types/post';
 import { useRouter } from 'expo-router';
+import { InputField } from '@/components/InputField';
+import { Button } from '@/components/Button';
 
 export default function NewPost() {
   const [postText, setPostText] = useState('');
@@ -136,22 +137,18 @@ export default function NewPost() {
         />
       )}
 
-      <TextInput
-        className="border p-3 rounded-md mb-4 bg-gray-100 text-gray-500"
+      <InputField
         placeholder="내용을 입력하세요..."
         value={postText}
         onChangeText={setPostText}
       />
 
-      <TouchableOpacity
+      <Button
+        title="게시"
         onPress={handlePost}
-        className={`p-3 rounded-md ${loading ? 'bg-gray-400' : 'bg-blue-500'}`}
-        disabled={loading}
-      >
-        <Text className="text-center text-white font-bold">
-          {loading ? '업로드 중...' : '게시하기'}
-        </Text>
-      </TouchableOpacity>
+        loading={loading}
+        color="bg-blue-500"
+      />
     </KeyboardAvoidingView>
   );
 }

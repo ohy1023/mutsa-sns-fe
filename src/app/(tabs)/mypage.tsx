@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   Modal,
   Alert,
-  TextInput,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { getMyPosts } from '@/api/post';
@@ -20,6 +19,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
+import { InputField } from '@/components/InputField';
 
 export default function Mypage() {
   const [userInfo, setUserInfo] = useState<UserDetailResponse>(
@@ -264,11 +264,11 @@ export default function Mypage() {
               className="w-24 h-24 rounded-full self-center"
             />
           </TouchableOpacity>
-          <TextInput
-            className="border p-2 rounded-lg mb-4"
-            defaultValue={userInfo.nickName}
+          <InputField
+            placeholder=""
             value={newNickName}
             onChangeText={setNewNickName}
+            defaultValue={userInfo.nickName}
           />
           <TouchableOpacity
             onPress={editProfile}

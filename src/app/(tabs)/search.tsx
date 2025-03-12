@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
   View,
-  TextInput,
   FlatList,
   Text,
   Alert,
@@ -15,6 +14,7 @@ import { fetchUsers } from '@/api/search';
 import { Page } from '@/types/common';
 import { UserInfoResponse } from '@/types/user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { InputField } from '@/components/InputField';
 
 export default function Search() {
   const [query, setQuery] = useState('');
@@ -103,8 +103,7 @@ export default function Search() {
 
   return (
     <View className="flex-1 p-4 bg-white">
-      <TextInput
-        className="border p-2 mb-4 rounded-md"
+      <InputField
         placeholder="유저 검색"
         value={query}
         onChangeText={setQuery}

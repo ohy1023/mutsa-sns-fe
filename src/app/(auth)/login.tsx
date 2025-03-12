@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { loginUser } from '@/api/user';
+import { InputField } from '@/components/InputField';
+import { Button } from '@/components/Button';
 
 export default function Login() {
   const [userName, setUserName] = useState<string>('');
@@ -35,31 +37,23 @@ export default function Login() {
   return (
     <View className="flex-1 items-center justify-center p-4 bg-white">
       <Text className="text-2xl font-bold mb-4">로그인</Text>
-      <TextInput
-        className="border p-3 rounded-md w-full mb-4"
+      <InputField
         placeholder="아이디"
-        autoCapitalize="none"
         value={userName}
         onChangeText={setUserName}
       />
-      <TextInput
-        className="border p-3 rounded-md w-full mb-4"
+      <InputField
         placeholder="비밀번호"
-        secureTextEntry
         value={password}
         onChangeText={setPassword}
+        secureTextEntry
       />
-      <TouchableOpacity
-        className={`p-3 rounded-md w-full mb-2 ${
-          loading ? 'bg-gray-400' : 'bg-blue-500'
-        }`}
+      <Button
+        title="로그인"
         onPress={handleLogin}
-        disabled={loading}
-      >
-        <Text className="text-white text-center">
-          {loading ? '로그인 중...' : '로그인'}
-        </Text>
-      </TouchableOpacity>
+        loading={loading}
+        color="bg-blue-500"
+      />
       <TouchableOpacity onPress={() => router.push('/register')}>
         <Text className="text-gray-600">계정이 없나요? 회원가입</Text>
       </TouchableOpacity>

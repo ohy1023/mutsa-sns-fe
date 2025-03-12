@@ -1,6 +1,6 @@
 export interface PostMediaRequest {
-  uri: string; // 이미지 미리보기를 위한 `uri`
-  order: number; // 이미지 순서
+  uri: string;
+  order: number;
 }
 
 export interface PostMediaDto {
@@ -26,4 +26,13 @@ export interface PostSummaryInfoResponse {
   postId: number;
   postThumbnailUrl: string;
   registeredAt: Date;
+}
+
+export interface PostItemProps {
+  postId: number;
+  userName: string;
+  userImg: string;
+  postThumbnailUrl: string;
+  likeCnt: number;
+  commentCnt: number;
 }

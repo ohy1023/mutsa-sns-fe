@@ -47,3 +47,19 @@ export interface Slice<T> {
   hasNext: boolean; // 다음 페이지 존재 여부
   hasPrevious: boolean; // 이전 페이지 존재 여부
 }
+
+export interface InputFieldProps {
+  placeholder: string;
+  value: string;
+  onChangeText: (text: string) => void;
+  secureTextEntry?: boolean;
+  defaultValue?: string;
+  onFocus?: () => void;
+}
+
+export interface ButtonProps {
+  title: string;
+  onPress: () => void;
+  loading?: boolean;
+  color?: string;
+}
