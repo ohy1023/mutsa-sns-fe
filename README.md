@@ -15,6 +15,6 @@ react-native expo를 활용한 mutsa-sns Front 개발
 
 - **프레임워크:** React Native (Expo)
 - **언어:** TypeScript
-- **내비게이션:** `expo-router`
+- **내비게이션:** expo-router
 - **UI 라이브러리:** Tailwind CSS
 ---
