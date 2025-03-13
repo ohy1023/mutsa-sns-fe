@@ -27,12 +27,3 @@ export interface PostSummaryInfoResponse {
   postThumbnailUrl: string;
   registeredAt: Date;
 }
-
-export interface PostItemProps {
-  postId: number;
-  userName: string;
-  userImg: string;
-  postThumbnailUrl: string;
-  likeCnt: number;
-  commentCnt: number;
-}
