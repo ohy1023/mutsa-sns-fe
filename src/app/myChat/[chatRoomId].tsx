@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
+  TextInput,
   TouchableOpacity,
   FlatList,
   SafeAreaView,
@@ -16,8 +17,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getChatHistory, sendChatMessage } from '@/api/chat';
 import { ChatResponseDto, Message } from '@/types/chat';
 import { STOMP_URL } from '@env';
-import { InputField } from '@/components/InputField';
-import { Button } from '@/components/Button';
 
 export default function ChatRoom() {
   const { chatRoomId } = useLocalSearchParams<{ chatRoomId: string }>();
@@ -41,11 +40,7 @@ export default function ChatRoom() {
     const fetchHistory = async () => {
       try {
         const response = await getChatHistory(Number(chatRoomId));
-        setMessages(
-          response.content.flatMap((chat) =>
-            chat.chatList.map((msg) => ({ ...msg, userImg: chat.userImg })),
-          ),
-        );
+        setMessages(response.content.flatMap((chat) => chat.chatList));
       } catch (error) {
         console.error('채팅 내역 불러오기 실패:', error);
       }
@@ -152,12 +147,10 @@ export default function ChatRoom() {
 
   return (
     <SafeAreaView className="flex-1 bg-white">
-      {/* 키보드가 올라오면 화면을 자동으로 조정 */}
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         className="flex-1"
       >
-        {/* 키보드 외의 화면 클릭 시 키보드 숨김 */}
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View className="flex-1 p-4">
             {/* 헤더 */}
@@ -187,7 +180,8 @@ export default function ChatRoom() {
 
             {/* 메시지 입력창 */}
             <View className="flex-row items-center p-2 border-t">
-              <InputField
+              <TextInput
+                className="flex-1 p-2 border rounded-md"
                 placeholder="메시지를 입력하세요"
                 value={messageText}
                 onChangeText={setMessageText}
@@ -195,11 +189,12 @@ export default function ChatRoom() {
                   flatListRef.current?.scrollToEnd({ animated: true })
                 }
               />
-              <Button
-                title="전송"
+              <TouchableOpacity
                 onPress={handleSendMessage}
-                color="bg-blue-500"
-              />
+                className="p-2 bg-blue-500 rounded-md ml-2"
+              >
+                <Text className="text-white">전송</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </TouchableWithoutFeedback>
